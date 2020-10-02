@@ -1,0 +1,13 @@
+.ipynb_checkpoints/
+.DS_store
+.vscode/
+__pycache__/
+
+*.db
+
+g
+
+logs/
+data/
+database_specs
+experiments/

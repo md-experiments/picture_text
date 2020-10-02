@@ -9,9 +9,12 @@ class HAC():
     def __init__(self, linkage_table):
         """
         """
-        self.linkage_table = linkage_table
-        self.rootnode, self.nodelist = to_tree(self.linkage_table, rd=True)
-        self.tbl = {i: [i, left_clust(nd), right_clust(nd), nd.dist, nd.count] for (i, nd) in enumerate(self.nodelist)}
+        if not isinstance(linkage_table, dict):
+            self.linkage_table = linkage_table
+            self.rootnode, self.nodelist = to_tree(self.linkage_table, rd=True)
+            self.tbl = {i: [i, left_clust(nd), right_clust(nd), nd.dist, nd.count] for (i, nd) in enumerate(self.nodelist)}
+        else:
+            self.tbl = linkage_table
         self.tbl_clusters = list(self.tbl.keys())
         self.tbl_clusters.sort()
 
@@ -34,14 +37,16 @@ class HAC():
             get_idx = new_memb
 
         memb.sort()
-        members = [m for m in memb if self.nodelist[m].is_leaf()]
-        clusters = [m for m in memb if not self.nodelist[m].is_leaf()]
-        table = [self.tbl[m] for m in memb]
+        members = [m for m in memb if self.tbl[m][1] == '']
+        clusters = [m for m in memb if not self.tbl[m][1] == '']
+        # Contains the full list of members
+        table = {m: self.tbl[m] for m in memb}
         return members, clusters, table
 
     def top_n_clusters(self,nr_clusters):
         clust_id=self.tbl_clusters[-nr_clusters:]
-        top_n=[self.tbl[c] for c in clust_id]
+        clust_id=[c for c in clust_id if self.tbl[c][1]!='']
+        top_n=[self.tbl[c] for c in clust_id if self.tbl[c][1]!='']
         
         child_id = flatten_list([t[1:3] for t in top_n])
         child_id = [c for c in child_id if c not in clust_id]
@@ -49,7 +54,7 @@ class HAC():
         total_size = sum(child_size)
         return child_id, child_size, total_size
 
-    def top_n_good_clusters(self,nr_clusters,min_size=0.1,max_extension=0.5):
+    def top_n_good_clusters(self,nr_clusters,min_size=0.1,max_extension=1.0):
         """
         Returns the members, clusters and linkage tables of the top N clusters. 
         TBD Will look for a minimal size of each cluster and extend size of N until enough clusters are found that match the minimal size
@@ -60,8 +65,9 @@ class HAC():
             max_extension (float): Relative proportion to extend search until all clusters are minimal size
         
         """
-        max_num_clusters = int(nr_clusters * (1 + max_extension))
+        
         nr_clusters = nr_clusters - 1
+        max_num_clusters = int(nr_clusters * (1 + max_extension))
         check = True
         # While number of tiny clusters (< min_size) is non-zero keep increasing
         while check and nr_clusters < max_num_clusters:
@@ -69,9 +75,9 @@ class HAC():
             nr_tiny_clusters = sum([c / total_size < min_size for c in clust_size]) 
             check = nr_tiny_clusters > 0
             nr_clusters = min(nr_clusters + nr_tiny_clusters, max_num_clusters)
-        print(nr_clusters)
-        clust_id, clust_size, total_size=self.top_n_clusters(nr_clusters)
 
+        clust_id, clust_size, total_size=self.top_n_clusters(nr_clusters)
+        
         cluster_members = []
         cluster_size = []
         cluster_tables = []
@@ -81,6 +87,8 @@ class HAC():
             cluster_members.append(m)
             cluster_tables.append(t)
             cluster_size.append(len(m))
+        # Check counts still match and no datapoints lost
+        assert(total_size==sum(clust_size))
         return cluster_members, cluster_size, cluster_tables
 
 def left_clust(nd):
