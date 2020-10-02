@@ -6,9 +6,10 @@ import fastcluster
 import numpy as np
 
 class HAC():
-    def __init__(self, linkage_table):
+    def __init__(self, linkage_table, parent=None):
         """
         """
+        self.parent = parent
         if not isinstance(linkage_table, dict):
             self.linkage_table = linkage_table
             self.rootnode, self.nodelist = to_tree(self.linkage_table, rd=True)
@@ -81,15 +82,17 @@ class HAC():
         cluster_members = []
         cluster_size = []
         cluster_tables = []
+        cluster_parents = []
 
         for c in clust_id:
-            m,_,t = self.get_members(c)
+            m,p,t = self.get_members(c)
+            cluster_parents.append(p)
             cluster_members.append(m)
             cluster_tables.append(t)
             cluster_size.append(len(m))
         # Check counts still match and no datapoints lost
         assert(total_size==sum(clust_size))
-        return cluster_members, cluster_size, cluster_tables
+        return cluster_members, cluster_parents, cluster_size, cluster_tables
 
 def left_clust(nd):
     try:
