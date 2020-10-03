@@ -1,5 +1,6 @@
 """
 This code is mostly taken from https://plotly.com/python/treemaps/
+My contribution to it is some documentation and wrappers
 """
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -48,15 +49,34 @@ def build_hierarchical_dataframe(df, levels, value_column, color_columns=None):
     df_all_trees = df_all_trees.append(total, ignore_index=True)
     return df_all_trees
 
-def build_tree_map(df, average_score = 0.5, maxdepth = None, value_name = 'Label', color_name = 'Color'):
+def build_tree_map(df, 
+                average_score = 0.5, 
+                maxdepth = None, 
+                column_nm = {
+                    'id':'id',
+                    'label':'labels',
+                    'parent':'parent',
+                    'value':'value',
+                    'color':'color'
+                    },
+                value_name = 'Label', 
+                color_name = 'Color'):
     """
     Can demonstrate a single or a number of dataframes as a hierarchical treemap and choose 
-    the depth showed at any time 
+    the depth showed at any time.
+
+    Optionality:
+        - When fed a list of dataframse it can show them as treemaps side-by-side (note that space can be insufficient for more than 2 or 3 at a time)
+        - maxdepth = None shows all the data but can be used as parameter to restrict only so many layers at a time
 
     Args:
-        df (dataframe or list of dataframes): mandatory columns are ['id' (label), 'parent', 'value', 'color']
-        average_score (float):
-        maxdepth (int): number of levels of hierarchy to show, min 2
+        df (dataframe or list of dataframes): mandatory columns must match spec in column_nm. Need columns for: id, label, parent, value, color
+        average_score (float, optional): Score used as midpoint for plot colors
+        maxdepth (int, optional): number of levels of hierarchy to show, min 2
+        column_nm (dict, optional): Set of column mappings for the mandatory tree map fields
+        value_name (string, optional): Hovertext label for 'value' values from dataframe, defaults to 'Label'
+        color_name (string, optional): Hovertext label for 'color' values from dataframe, defaults to 'Color'
+
     """
     if isinstance(df,list):
         pass
@@ -65,22 +85,22 @@ def build_tree_map(df, average_score = 0.5, maxdepth = None, value_name = 'Label
     else:
         print('df of not expected format')
 
-    mandatory_cols = ['value', 'color', 'parent', 'id']
+    # Assert mandatory columns are present in dataframe
     for (i, df_i) in enumerate(df):
-        for m in mandatory_cols:
-            assert(m in df_i.columns)
+        for m in column_nm:
+            assert(column_nm[m] in df_i.columns)
 
     fig = make_subplots(1, len(df), specs=[[{"type": "domain"}]*len(df)],)
     
     for (i, df_all_trees) in enumerate(df):
         fig.add_trace(go.Treemap(
-            ids=df_all_trees['id'],
-            labels=df_all_trees['labels'],
-            parents=df_all_trees['parent'],
-            values=df_all_trees['value'],
+            ids=df_all_trees[column_nm['id']],
+            labels=df_all_trees[column_nm['label']],
+            parents=df_all_trees[column_nm['parent']],
+            values=df_all_trees[column_nm['value']],
             branchvalues='total',
             marker=dict(
-                colors=df_all_trees['color'],
+                colors=df_all_trees[column_nm['color']],
                 colorscale='RdBu',
                 cmid=average_score),
             hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
