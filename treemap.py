@@ -74,7 +74,8 @@ def build_tree_map(df, average_score = 0.5, maxdepth = None, value_name = 'Label
     
     for (i, df_all_trees) in enumerate(df):
         fig.add_trace(go.Treemap(
-            labels=df_all_trees['id'],
+            ids=df_all_trees['id'],
+            labels=df_all_trees['labels'],
             parents=df_all_trees['parent'],
             values=df_all_trees['value'],
             branchvalues='total',

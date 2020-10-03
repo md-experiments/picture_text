@@ -24,7 +24,7 @@ def cluster_summary_simple(clust_txt, model, clust_emb = [], top_n=1, text_if_em
             return list(df1.head(top_n).titles.values)
 
 
-def unroll_tree_map(X, depth=3, nr_splits=3,min_size=0.1,max_extension=1):
+def unroll_tree_map(X, method='single', depth=3, nr_splits=3,min_size=0.1,max_extension=1):
     go = True
     #clust_nm = 'all'
     clust_idx = -1
@@ -42,7 +42,7 @@ def unroll_tree_map(X, depth=3, nr_splits=3,min_size=0.1,max_extension=1):
     #col_nm = ['value', 'color', 'parent_idx', 'id_idx','parent_nm', \
     #         'id_nm', 'members_ids', 'members_txt', 'members_embeddings']
 
-    z=fastcluster.single(X)
+    z=fastcluster.linkage(X, method=method)
     hac = HAC(z, parent = clust_idx)
     new_clusters = hac.top_n_good_clusters(nr_splits,min_size=min_size,max_extension=max_extension)
     
