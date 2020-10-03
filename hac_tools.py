@@ -9,7 +9,10 @@ class HAC():
     def __init__(self, linkage_table, parent=None):
         """
         """
-        self.parent = parent
+        if parent == None:
+            self.parent = -1
+        else:
+            self.parent = parent
         if not isinstance(linkage_table, dict):
             self.linkage_table = linkage_table
             self.rootnode, self.nodelist = to_tree(self.linkage_table, rd=True)
@@ -79,20 +82,19 @@ class HAC():
 
         clust_id, clust_size, total_size=self.top_n_clusters(nr_clusters)
         
-        cluster_members = []
-        cluster_size = []
-        cluster_tables = []
-        cluster_parents = []
-
+        res = {}
         for c in clust_id:
-            m,p,t = self.get_members(c)
-            cluster_parents.append(p)
-            cluster_members.append(m)
-            cluster_tables.append(t)
-            cluster_size.append(len(m))
+            m,_,t = self.get_members(c)
+            res[c]={
+                'cluster_id': c,
+                'cluster_parent': self.parent,
+                'cluster_members': m,
+                'cluster_table': t,
+                'cluster_size': len(m),
+            }
         # Check counts still match and no datapoints lost
-        assert(total_size==sum(clust_size))
-        return cluster_members, cluster_parents, cluster_size, cluster_tables
+        assert(total_size==sum([res[c]['cluster_size'] for c in clust_id]))
+        return res
 
 def left_clust(nd):
     try:
