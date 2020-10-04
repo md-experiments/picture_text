@@ -7,6 +7,7 @@ from scipy.cluster import hierarchy
 from hac_tools import HAC
 from sentence_transformers import SentenceTransformer
 from treemap import build_tree_map
+from utils import TimeClass
 
 def sbert_encoder(text_list, pretrained_reference='distilbert-base-nli-stsb-mean-tokens'):
     """
@@ -48,15 +49,21 @@ class PictureText(object):
             hac_method (string): HAC method used by fastcluster, defaults to 'ward'
             hac_metric (string): Distrance metric used by fastcluster, defaults to 'euclidean'
 
-        >>> pt = PictureText(['txt','txt'])
-        >>> pt([[1], [3]])
+        >>> pt = PictureText(['txt','txt','txt','txt','txt','txt','txt'])
+        >>> pt([[1], [3], [1], [3], [1], [3], [1]])
+        Embeddings updated, external embeddings provided
+        Linkage updated, using ward method and euclidean distances, time taken 0 secs
         >>> pt.txt_embeddings
-        [[1], [3]]
+        [[1], [3], [1], [3], [1], [3], [1]]
         >>> pt(encoder = lambda x: [[1]]*len(x))
+        Embeddings updated, using encoder, time taken 0 secs
+        Linkage updated, using ward method and euclidean distances, time taken 0 secs
         >>> pt.txt_embeddings
-        [[1], [1]]
+        [[1], [1], [1], [1], [1], [1], [1]]
         >>> X=[[x] for x in [1001,1000,1,10,99,100,101]]
         >>> pt(X)
+        Embeddings updated, external embeddings provided
+        Linkage updated, using ward method and euclidean distances, time taken 0 secs
         >>> pt.txt_embeddings
         [[1001], [1000], [1], [10], [99], [100], [101]]
         >>> pt.linkage_table
@@ -73,19 +80,28 @@ class PictureText(object):
         if txt_embeddings:
             self.txt_embeddings = txt_embeddings
             self.linkage_table = None
+            assert(len(self.txt_embeddings)==len(self.txt))
+            print('Embeddings updated, external embeddings provided')
         # Calculate embeddings if those are missing and the encoder is unchanged do nothing
         elif (encoder == self.encoder):
             pass
         else:
+            t = TimeClass()
             self.encoder = encoder
             self.txt_embeddings = self.encoder(self.txt)
             self.linkage_table = None
+            secs, _ = t.take()
+            assert(len(self.txt_embeddings)==len(self.txt))
+            print(f'Embeddings updated, using encoder, time taken {secs} secs')
 
         # Generate linkage table or update it if parameters for HAC have changed
         if (self.linkage_table==None) or (hac_method!=self.hac_method) or (hac_metric!=self.hac_metric):
+            t = TimeClass()
             self.hac_method = hac_method
             self.hac_metric = hac_metric
             self.linkage_table = fastcluster.linkage(self.txt_embeddings, method=hac_method, metric=hac_metric)
+            secs, _ = t.take()
+            print(f'Linkage updated, using {hac_method} method and {hac_metric} distances, time taken {secs} secs')
 
     def make_picture(self, 
                 summarizer = None,
@@ -178,6 +194,8 @@ class PictureText(object):
         >>> X=[[x] for x in [1001,1000,1,10,99,100,101]]
         >>> pt = PictureText(['txt']*7)
         >>> pt(X)
+        Embeddings updated, external embeddings provided
+        Linkage updated, using ward method and euclidean distances, time taken 0 secs
         >>> df = pt.hac_to_treemap(pt.linkage_table)
         >>> df.drop('cluster_table',axis=1)
             id parent cluster_members value
