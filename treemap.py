@@ -71,9 +71,9 @@ def build_tree_map(df,
 
     Args:
         df (dataframe or list of dataframes): mandatory columns must match spec in column_nm. Need columns for: id, label, parent, value, color
-        average_score (float, optional): Score used as midpoint for plot colors
-        maxdepth (int, optional): number of levels of hierarchy to show, min 2
-        column_nm (dict, optional): Set of column mappings for the mandatory tree map fields
+        average_score (float, optional): Score used as midpoint for plot colors, defaults to 0.5
+        maxdepth (int, optional): number of levels of hierarchy to show, min 2, defaults to None
+        column_nm (dict, optional): Set of column mappings for the mandatory tree map fields. Need columns for: id, label, parent, value, color
         value_name (string, optional): Hovertext label for 'value' values from dataframe, defaults to 'Label'
         color_name (string, optional): Hovertext label for 'color' values from dataframe, defaults to 'Color'
 

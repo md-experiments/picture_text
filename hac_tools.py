@@ -13,7 +13,7 @@ class HAC():
 
         Args:
             linkage_table (list or dict): 
-                Linkage table produced as an output of a HAC algo (fastcluster or scipy) 
+                Linkage table produced as an output of a HAC algorithm (fastcluster or scipy) 
                 OR
                 a dictionary table subset thereof
             parent (int or string, optional): Parent ID value to be used as parent of this dataset
