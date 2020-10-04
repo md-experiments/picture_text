@@ -115,7 +115,17 @@ class PictureText(object):
         Creates the HAC treemap picture of text
 
         Args:        
-
+            summarizer (object): Summarizer function of the form summary, summary_quality = summarizer(list_text,list_embeddings) and returns a summary (string) and summary_quality (float), defaults None which uses cluster_summary_simple
+            Used by hac_to_treemap:
+                layer_depth (int, optional): Number of layers to return. This will be the number of drilldowns available in treemap, defaults to 6
+                layer_min_size (float, optional): Minimal size for a cluster, as a % of total number of observations in X, defaults to 0.1
+                layer_max_extension (float, optional): Percent extension to nr_splits if min_size not met by all clusters, defaults to 1.0
+            Used by build_tree_map:
+                treemap_average_score (float, optional): Score used as midpoint for plot colors, defaults to None which uses a weighted average of the summary_quality
+                treemap_maxdepth (int, optional): Number of levels of hierarchy to show, min 2, defaults to 3
+            
+        Returns:
+            Interactive plotly treemap
         """
         if summarizer:
             self.summarizer = summarizer
