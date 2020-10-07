@@ -4,10 +4,11 @@ import fastcluster
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.cluster import hierarchy
-from hac_tools import HAC
 from sentence_transformers import SentenceTransformer
-from treemap import build_tree_map
-from utils import TimeClass
+
+from src.hac_tools import HAC
+from src.treemap import build_tree_map
+from src.utils import TimeClass
 
 def sbert_encoder(text_list, pretrained_reference='distilbert-base-nli-stsb-mean-tokens'):
     """
