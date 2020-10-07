@@ -12,6 +12,7 @@ Checkout the colab notebook
 
 ## Getting started
 
+### Installation
 ```py
 conda create --name pt python=3.6  
 conda install -n pt nb_conda_kernels
@@ -19,9 +20,41 @@ conda activate pt
 pip install -r requirements.txt
 ```
 
+### A simple example
+Consider the default values and their result
+```py
+txt=['The cat sits outside',
+     'A man is playing guitar',
+     'I love pasta',
+     'The new movie is awesome',
+     'The cat plays in the garden',
+     'A woman watches TV',
+     'The new movie is so great',
+     'Do you like pizza?',
+     'Burgers are my favorite',
+     'I like chips',
+     'I will have french fries with my burger'
+       ]
+from picture_text_summary import PictureText
+# initializing just sets the text corpus
+pt = PictureText(txt) 
+# calling the method itself does the heavy lifting: 1. HAC and 2. text embedding 
+pt() 
+# This step outs it all together:
+# 1. converts HAC into a treemap format
+# 2. determines a summary for each cluster and 
+# 3. draws & return a treemap
+pt.make_picture() 
+```
+<p align="left">
+  <img src="assets/default_settings.png" width=500>
+</p>
+
 ## Customization
+
 Consider the default values and their result
 ```python
+from picture_text_summary import PictureText
 pt = PictureText(txt)
 pt(hac_method='ward', hac_metric='euclidean')
 pt.make_picture(layer_depth = 6,
@@ -33,6 +66,7 @@ pt.make_picture(layer_depth = 6,
 <p align="left">
   <img src="assets/default_settings.png" width=500>
 </p>
+
 ### Customizing layers
 Changing `layer_depth` parameter sets the number of layers produced by the split.
 ```python
@@ -62,14 +96,16 @@ pt(hac_method='ward', hac_metric='euclidean')
 
 ## BYO-NLP
 The key features to this sort of approach are the embeddings as well as the method of multi-doc summarization. You can use your NLP tools of choice there.
-#### Text embeddings
+
+### Text embeddings
 The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`
 ```python
+from picture_text_summary import sbert_encoder
 pt = PictureText(txt)
-pt(hac_method='ward', hac_metric='euclidean')
+pt(encoder=sbert_encoder)
 ```
 
-#### Summarizer
+### Summarizer
 ```python
 def silly_summarizer(txt,txt_embeddings):
    return "All the same to me", 0
