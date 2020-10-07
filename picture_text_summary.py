@@ -130,18 +130,24 @@ class PictureText(object):
         Returns:
             Interactive plotly treemap
         """
+        # Set summarizer
         if summarizer:
             self.summarizer = summarizer
         else:
             self.summarizer = self.cluster_summary_simple
+        # Convert HAC linkage table into tree map form
         df_res = self.hac_to_treemap(self.linkage_table, depth=layer_depth,min_size=layer_min_size,max_extension=layer_max_extension,)
+        # Get summaries for each cluster
         df_res['labels'], df_res['color']= zip(*df_res.apply(lambda x: \
             self.summarizer([np.array(self.txt[m]) for m in x['cluster_members']], \
                                 [np.array(self.txt_embeddings[m]) for m in x['cluster_members']]), axis=1))
+        # Calculate overall tree map average score
         if treemap_average_score:
             self.average_score = treemap_average_score
         else:
             self.average_score = df_res.apply(lambda x: x['color']*x['value'],axis=1).sum()/df_res.value.sum()
+        print(f'Picture weighted average {round(self.average_score,2)}')
+        # Draw tree map
         build_tree_map(df_res,maxdepth=treemap_maxdepth,average_score=self.average_score)
 
     def cluster_summary_simple(self,clust_txt,clust_embeddings,top_n=1, text_if_empty='blank'):
