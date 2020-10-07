@@ -11,10 +11,13 @@ from utils import TimeClass
 
 def sbert_encoder(text_list, pretrained_reference='distilbert-base-nli-stsb-mean-tokens'):
     """
-    Helper function which simplifies the embedding call and helps lading data into elastic easier
+    Helper function using sentence_transformers which simplifies the embedding call
 
     Args:
-        text_list 
+        text_list (list): list of strings to embed
+        pretrained_reference (string, optional): the pretrained model to use inside SentenceTransformer, refer to https://www.sbert.net, defaults to 'distilbert-base-nli-stsb-mean-tokens'
+    Returns:
+        list of embeddings for each string
     """
     model = SentenceTransformer(pretrained_reference)
     text_embeddings = model.encode(text_list, batch_size=16, show_progress_bar=False, convert_to_numpy=True)
@@ -232,7 +235,7 @@ class PictureText(object):
         df_res=df_res.append(pd.DataFrame(new_clusters).T)
         depth=depth-1
         
-        while go:
+        while go and depth>0:
             new_res = {}
             for c in new_clusters:
                 hac = HAC(new_clusters[c]['cluster_table'],parent=c)

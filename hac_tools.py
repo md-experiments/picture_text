@@ -45,12 +45,12 @@ class HAC():
         self.tbl_clusters = list(self.tbl.keys())
         self.tbl_clusters.sort()
 
-    def dendrogram(self):
+    def dendrogram(self, **kwargs):
         """
         Create a dendrogram from the data in the class
         """
         plt.figure()
-        dn = hierarchy.dendrogram(self.linkage_table)
+        dn = hierarchy.dendrogram(self.linkage_table, **kwargs)
 
     def get_members(self, cluster_id):
         """

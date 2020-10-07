@@ -112,6 +112,6 @@ def build_tree_map(df,
         if maxdepth < 2:
             print('try maxdepth > 1')
         fig.update_traces(maxdepth=maxdepth)
-    fig.update_layout(margin=dict(t = 30, b = 10, r = 10, l = 10),)
-    #uniformtext_minsize=12, uniformtext_mode='hide')
+    fig.update_layout(margin=dict(t = 30, b = 10, r = 10, l = 10))
+    #uniformtext_minsize=12, uniformtext_mode='show')
     fig.show()
