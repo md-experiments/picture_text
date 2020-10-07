@@ -5,6 +5,20 @@ Hierarchical Clustering (HAC) with tree maps on text
   <img src="assets/tree_map1.gif" width=1000>
 </p>
 
+## Demo
+Checkout the colab notebook
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1INBPsgjhF1ikejOPgoi6yXM02_OrUEK7?usp=sharing)
+
+## Getting started
+
+```py
+conda create --name pt python=3.6  
+conda install -n pt nb_conda_kernels
+conda activate pt
+pip install -r requirements.txt
+```
+
 ## Customization
 Consider the default values and their result
 ```python
