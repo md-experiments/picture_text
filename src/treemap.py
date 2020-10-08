@@ -59,10 +59,10 @@ def build_tree_map(df,
                     'value':'value',
                     'color':'color'
                     },
-                value_name = 'Label', 
-                color_name = 'Color'):
+                value_name = '# docs',
+                color_name = 'Avg. Similarity'):
     """
-    Can demonstrate a single or a number of dataframes as a hierarchical treemap and choose 
+    Can demonstrate a single or a number of dataframes as a hierarchical treemap and choose
     the depth showed at any time.
 
     Optionality:
@@ -76,7 +76,7 @@ def build_tree_map(df,
         column_nm (dict, optional): Set of column mappings for the mandatory tree map fields. Need columns for: id, label, parent, value, color
         value_name (string, optional): Hovertext label for 'value' values from dataframe, defaults to 'Label'
         color_name (string, optional): Hovertext label for 'color' values from dataframe, defaults to 'Color'
-        
+
     Returns:
         Interactive plotly treemap
     """
@@ -93,7 +93,7 @@ def build_tree_map(df,
             assert(column_nm[m] in df_i.columns)
 
     fig = make_subplots(1, len(df), specs=[[{"type": "domain"}]*len(df)],)
-    
+
     for (i, df_all_trees) in enumerate(df):
         fig.add_trace(go.Treemap(
             ids=df_all_trees[column_nm['id']],

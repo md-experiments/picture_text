@@ -118,7 +118,7 @@ class PictureText(object):
         """
         Creates the HAC treemap picture of text
 
-        Args:        
+        Args:
             summarizer (object): Summarizer function of the form summary, summary_quality = summarizer(list_text,list_embeddings) and returns a summary (string) and summary_quality (float), defaults None which uses cluster_summary_simple
             Used by hac_to_treemap:
                 layer_depth (int, optional): Number of layers to return. This will be the number of drilldowns available in treemap, defaults to 6
@@ -127,7 +127,7 @@ class PictureText(object):
             Used by build_tree_map:
                 treemap_average_score (float, optional): Score used as midpoint for plot colors, defaults to None which uses a weighted average of the summary_quality
                 treemap_maxdepth (int, optional): Number of levels of hierarchy to show, min 2, defaults to 3
-            
+
         Returns:
             Interactive plotly treemap
         """
@@ -154,7 +154,7 @@ class PictureText(object):
     def cluster_summary_simple(self,clust_txt,clust_embeddings,top_n=1, text_if_empty='blank'):
         """
         Returns a summary for a list of documents assuming they belong to the same cluster.
-        Takes the document embedding closest to the average cluster embedding as summary. 
+        Takes the document embedding closest to the average cluster embedding as summary.
         Additionally, averages the similarity of all documents to the cluster average as a measure of quality of the cluster
 
         Args:
@@ -164,9 +164,9 @@ class PictureText(object):
             text_if_empty (string): Text to use as summary if empty list of documents provided, defaults to 'blank'
 
         Returns:
-            summary_txt (str or list): summary sentence or sentences 
+            summary_txt (str or list): summary sentence or sentences
             centroid_similarity (float): average similarity to the centroid
-        
+
         >>> pt = PictureText([])
         >>> pt.cluster_summary_simple(['txt1','txt2'], clust_embeddings = [[1,2],[4,5]])
         ('Txt2', 0.9965696683150038)
@@ -193,21 +193,21 @@ class PictureText(object):
 
     def hac_to_treemap(self, linkage_table, depth=3, nr_splits=3,min_size=0.1,max_extension=1):
         """
-        Starting from a list of vectors, performs HAC using fastcluster, then splits results into a 
+        Starting from a list of vectors, performs HAC using fastcluster, then splits results into a
         series of layers with each layer consisting of a roughly equivalent number of slices
 
         Args:
-            linkage_table (list): Linkage table produced as an output of a HAC algorithm (fastcluster or scipy) 
+            linkage_table (list): Linkage table produced as an output of a HAC algorithm (fastcluster or scipy)
             method (string, optional): Method used in HAC, feeds directly into fastcluster, defaults to 'single'
             depth (int, optional): Number of layers to return. This will be the number of drilldowns available in treemap, defaults to 3
             nr_splits (int, optional): Number of clusters to seek to split each layer into, defaults to 3
             min_size (float, optional): Minimal size for a cluster, as a % of total number of observations in X,
                 defaults to 0.1 (meaning the smallest cluster should be at least 10% of overall size)
             max_extension (float, optional): Percent extension to nr_splits if min_size not met by all clusters, defaults to 1.0
-        Example: 
-            - if nr_splits = 3, min_size = 0.1, max_extension=1 
+        Example:
+            - if nr_splits = 3, min_size = 0.1, max_extension=1
             - max_extension = 1 means up to 100% increase in nr_splits, i.e. up to 6 splits in this case
-            - only 1 out of 3 clusters initially are > 10% 
+            - only 1 out of 3 clusters initially are > 10%
             - Initially this will add 2 more splits (3 - 1) to a total of 5 which is less then the max_extension allowance of 6
             - If again 2 of the 5 are under 10%, this would mean increasing number of splits to 7, however, the max is 6 so we end up with 6
 
@@ -235,13 +235,13 @@ class PictureText(object):
         go = True
         clust_idx = 'Full'
         df_res = pd.DataFrame([],columns=['cluster_id', 'cluster_parent', 'cluster_members', 'cluster_table', 'cluster_size'])
-        
+
         hac = HAC(linkage_table, parent = clust_idx)
         new_clusters = hac.top_n_good_clusters(nr_splits,min_size=min_size,max_extension=max_extension)
-        
+
         df_res=df_res.append(pd.DataFrame(new_clusters).T)
         depth=depth-1
-        
+
         while go and depth>0:
             new_res = {}
             for c in new_clusters:
@@ -253,7 +253,7 @@ class PictureText(object):
             depth=depth-1
             if depth<1:
                 go = False
-        
+
         col_nm={'cluster_size':'value','cluster_id':'id','cluster_parent':'parent'}
         df_res=df_res.rename(columns=col_nm)
         return df_res
