@@ -46,7 +46,7 @@ class PictureText(object):
         """
         Calls embeddings and generates HAC linkage table. Can either provide embeddings or an encoder.
         Call method can be triggered multiple times with updates to embeddings or linkage when relevant
-        
+
         Args:
             txt_embeddings (list, optional): list of embeddings of the sentences clust_txt, assume ordering matches text, defaults to None
             encoder (object): encoder function used to generate txt_embeddings if none provided, defaults to sbert_encoder
@@ -99,7 +99,7 @@ class PictureText(object):
             print(f'Embeddings updated, using encoder, time taken {secs} secs')
 
         # Generate linkage table or update it if parameters for HAC have changed
-        if (self.linkage_table==None) or (hac_method!=self.hac_method) or (hac_metric!=self.hac_metric):
+        if (np.all(self.linkage_table==None)) or (hac_method!=self.hac_method) or (hac_metric!=self.hac_metric):
             t = TimeClass()
             self.hac_method = hac_method
             self.hac_metric = hac_metric
