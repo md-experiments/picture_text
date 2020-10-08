@@ -8,7 +8,7 @@ Hierarchical Clustering (HAC) with tree maps on text
 ## Demo
 Checkout the colab notebook
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1INBPsgjhF1ikejOPgoi6yXM02_OrUEK7?usp=sharing)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1-xJCeuQ-Tv7aP2kta9-ZR3R_uhOu8Mud?usp=sharing)
 
 ## Getting started
 
