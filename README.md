@@ -49,10 +49,12 @@ pt.make_picture()
 <p align="left">
   <img src="assets/default_settings.png" width=500>
 </p>
+
 ### Outline of approach
 <p align="left">
   <img src="assets/solution_steps.png" width=500>
 </p>
+
 - Perform any required preprocessing to get to a list of document strings
 - Embed / Encode all documents with the method of choice, by default I use [SBERT](https://www.sbert.net)
 - Use HAC to get a “linkage” table of hierarchical assignments of each point to the rest of the data. Here I use [fastcluster](http://danifold.net/fastcluster.html), ward linkage by default.
