@@ -109,6 +109,7 @@ class PictureText(object):
 
     def make_picture(self, 
                 summarizer = None,
+                layer_size = 3,
                 layer_depth = 6,
                 layer_min_size = 0.1,
                 layer_max_extension = 1,
@@ -121,6 +122,7 @@ class PictureText(object):
         Args:
             summarizer (object): Summarizer function of the form summary, summary_quality = summarizer(list_text,list_embeddings) and returns a summary (string) and summary_quality (float), defaults None which uses cluster_summary_simple
             Used by hac_to_treemap:
+                layer_size (int, optional): Minimal number of clusters per layer, defaults to 3
                 layer_depth (int, optional): Number of layers to return. This will be the number of drilldowns available in treemap, defaults to 6
                 layer_min_size (float, optional): Minimal size for a cluster, as a % of total number of observations in X, defaults to 0.1
                 layer_max_extension (float, optional): Percent extension to nr_splits if min_size not met by all clusters, defaults to 1.0
@@ -137,7 +139,7 @@ class PictureText(object):
         else:
             self.summarizer = self.cluster_summary_simple
         # Convert HAC linkage table into tree map form
-        df_res = self.hac_to_treemap(self.linkage_table, depth=layer_depth,min_size=layer_min_size,max_extension=layer_max_extension,)
+        df_res = self.hac_to_treemap(self.linkage_table, depth=layer_depth, nr_splits=layer_size, min_size=layer_min_size,max_extension=layer_max_extension,)
         # Get summaries for each cluster
         df_res['labels'], df_res['color']= zip(*df_res.apply(lambda x: \
             self.summarizer([np.array(self.txt[m]) for m in x['cluster_members']], \
