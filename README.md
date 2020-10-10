@@ -36,11 +36,16 @@ txt=['The cat sits outside',
      'I will have french fries with my burger'
        ]
 from picture_text_summary import PictureText
+
 # initializing just sets the text corpus
 pt = PictureText(txt) 
-# calling the method itself does the heavy lifting: 1. HAC and 2. text embedding 
+
+# Calling the method does the heavy lifting: 
+# 1. HAC 
+# 2. text embedding 
 pt() 
-# This step outs it all together:
+
+# This step puts it all together:
 # 1. converts HAC into a treemap format
 # 2. determines a summary for each cluster and 
 # 3. draws & return a treemap
