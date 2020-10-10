@@ -1,12 +1,16 @@
 # PictureText
-Hierarchical Clustering (HAC) with tree maps on text
+PictureText converts a list of short documents to an interactive tree map with minimal code. It defaults to SBERT for text representation, leverages Hierarchical Agglomerative Clustering (HAC) for grouping and tree maps to visualize text interactively.
 
 <p align="center">
   <img src="assets/cover.gif" width=1000>
 </p>
 
+Given a corpus of short documents (think news headlines) it can group them into hierarchical groups, that semantically belong together. It also allows the reader to explore each group in more detail by going deeper into a hierarchy and dynamically pulling out of it when needed.
+
+The approach is intended for grouping large sets of non-domain specific short texts. For instance: news headlines, natural language questions and social media posts would be good candidates.
+
 ## Demo
-Checkout the colab notebook
+Checkout the Colab notebook
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1mTrwk9hYl7bXYUr7e5hbCzv7Bim9ML8Y?usp=sharing)
 
@@ -84,7 +88,7 @@ pt.make_picture(layer_depth = 6,
   <img src="assets/default_settings.png" width=500>
 </p>
 
-### Customizing layers
+### Selecting Layer Settings
 Changing `layer_depth` parameter sets the number of layers produced by the split.
 ```python
 pt.make_picture(layer_depth = 1)
@@ -105,23 +109,39 @@ pt.make_picture(layer_depth = 1,
   <img src="assets/min_size.png" width=500>
 </p>
 
-### Customizing clustering methods
+### Selecting Clustering Settings
+
+The defaults are the following
 
 ```python
 pt = PictureText(txt)
 pt(hac_method='ward', hac_metric='euclidean')
 ```
 
+However, those get fed directly into fastcluster, hence all choices from the fastcluster documentation are available here too.
+
 ## BYO-NLP
 The key features to this sort of approach are the embeddings as well as the method of multi-doc summarization. You can use your NLP tools of choice there.
 
 ### Text embeddings
-The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`. However, any mapping of text to encoding can be used instead.
+The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`.
+
 ```python
 from picture_text_summary import sbert_encoder
 pt = PictureText(txt)
 pt(encoder=sbert_encoder)
 ```
+However, any mapping of a list of text to encoding can be used instead.
+```py
+def silly_encoder(text_list):
+    return [[1]]*len(text_list)
+
+pt(encoder=silly_encoder)
+pt.make_picture()
+```
+<p align="left">
+  <img src="assets/silly_encoder.png" width=500>
+</p>
 
 ### Summarizer
 The default sumary method is to take the cluster member closest to the cluster averag. However, any mapping of a list of texts and embeddings into a text summary can be used instead.
