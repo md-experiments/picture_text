@@ -59,7 +59,7 @@ pt.make_picture()
   <img src="assets/default_settings.png" width=500>
 </p>
 
-### Outline of approach
+## Outline of approach
 <p align="left">
   <img src="assets/solution_steps.png" width=500>
 </p>
