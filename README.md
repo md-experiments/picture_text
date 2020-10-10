@@ -63,9 +63,9 @@ pt.make_picture()
 - Perform any required preprocessing to get to a list of document strings
 - Embed / Encode all documents with the method of choice, by default I use [SBERT](https://www.sbert.net)
 - Use HAC to get a “linkage” table of hierarchical assignments of each point to the rest of the data. Here I use [fastcluster](http://danifold.net/fastcluster.html), ward linkage by default.
-- Iteratively create “layers” by selecting a roughly set number of splits to each layer
-- Generate a summary for each layer. In the default setting, I use the point closest to the average of the cluster. Using the average of the cluster to represent its centroid is used in a number of few-shot, unsupervised settings
-- Use [plotly](https://plotly.com/)'s [treemap](https://plotly.com/python/treemaps/) for interactive visualization
+- Convert to layers for treemap. Iteratively create “layers” by selecting a set number of splits to each layer
+- Summarize. Generate a summary for each layer. In the default setting, I use the point closest to the average of the cluster. Using the average of the cluster to represent its centroid is used in a number of few-shot, unsupervised settings
+- Draw treemap. Use [plotly](https://plotly.com/)'s [treemap](https://plotly.com/python/treemaps/) for interactive visualization
 
 ## Customization
 
@@ -116,7 +116,7 @@ pt(hac_method='ward', hac_metric='euclidean')
 The key features to this sort of approach are the embeddings as well as the method of multi-doc summarization. You can use your NLP tools of choice there.
 
 ### Text embeddings
-The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`
+The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`. However, any mapping of text to encoding can be used instead.
 ```python
 from picture_text_summary import sbert_encoder
 pt = PictureText(txt)
@@ -124,6 +124,7 @@ pt(encoder=sbert_encoder)
 ```
 
 ### Summarizer
+The default sumary method is to take the cluster member closest to the cluster averag. However, any mapping of a list of texts and embeddings into a text summary can be used instead.
 ```python
 def silly_summarizer(txt,txt_embeddings):
    return "All the same to me", 0
