@@ -66,10 +66,10 @@ Checkout the [blogpost](https://medium.com/@mihail.dungarov/picturetext-interact
 
 The pipeline works as follows:
 - Perform any required preprocessing to get to a list of document strings
-- Embed / Encode all documents with the method of choice, by default I use [SBERT](https://www.sbert.net)
-- Use HAC to get a “linkage” table of hierarchical assignments of each point to the rest of the data. Here I use [fastcluster](http://danifold.net/fastcluster.html), ward linkage by default.
-- Convert to layers for treemap. Iteratively create “layers” by selecting a set number of splits to each layer
-- Summarize. Generate a summary for each layer. In the default setting, I use the point closest to the average of the cluster. Using the average of the cluster to represent its centroid is used in a number of few-shot, unsupervised settings
+- Embed / Encode all documents with the method of choice, defaults to [SBERT](https://www.sbert.net)
+- Use HAC to get a “linkage” table of hierarchical assignments of each point to the rest of the data. Uses [fastcluster](http://danifold.net/fastcluster.html), ward linkage by default.
+- Convert to layers for treemap. Iteratively create “layers” by selecting a set number of splits to each layer to satisfy the format needed in treemaps
+- Summarize. Generate a summary for each layer. In the default setting, uses the observation closest to the average of the cluster. Using the average of the cluster to represent its centroid is used in a number of few-shot, unsupervised settings
 - Draw treemap. Use [plotly](https://plotly.com/)'s [treemap](https://plotly.com/python/treemaps/) for interactive visualization
 
 ## Customization
