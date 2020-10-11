@@ -11,6 +11,15 @@ The approach is intended for grouping large sets of non-domain specific short te
 
 ## Getting started
 
+### Installation
+```py
+git clone https://github.com/md-experiments/picture_text.git
+conda create --name pt python=3.6
+conda install -n pt nb_conda_kernels
+conda activate pt
+pip install -r requirements.txt
+```
+
 ### A simple example
 Consider the default values and their result
 ```py
@@ -47,18 +56,9 @@ pt.make_picture()
 </p>
 
 ### Demo
-Checkout the Colab notebook
+Checkout the Colab notebook for interactive examples
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1mTrwk9hYl7bXYUr7e5hbCzv7Bim9ML8Y?usp=sharing)
-
-### Installation
-```py
-git clone https://github.com/md-experiments/picture_text.git
-conda create --name pt python=3.6
-conda install -n pt nb_conda_kernels
-conda activate pt
-pip install -r requirements.txt
-```
 
 ## Outline of approach
 <p align="left">
