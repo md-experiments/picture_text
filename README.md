@@ -62,7 +62,7 @@ Checkout the Colab notebook for interactive examples
 
 ## Outline of approach
 <p align="left">
-  <img src="assets/solution_steps.png" width=500>
+  <img src="assets/solution_steps.png" width=1000>
 </p>
 
 - Perform any required preprocessing to get to a list of document strings
