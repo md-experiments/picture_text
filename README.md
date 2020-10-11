@@ -55,7 +55,7 @@ pt.make_picture()
 </p>
 
 ### Demo
-Checkout the Colab notebook for interactive examples
+Checkout the [blogpost](https://medium.com/@mihail.dungarov/picturetext-interactive-visuals-of-text-591e6375c1d6) for more explanation or Colab notebook for interactive examples
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1mTrwk9hYl7bXYUr7e5hbCzv7Bim9ML8Y?usp=sharing)
 
@@ -64,6 +64,7 @@ Checkout the Colab notebook for interactive examples
   <img src="assets/solution_steps.png" width=1000>
 </p>
 
+The pipeline works as follows:
 - Perform any required preprocessing to get to a list of document strings
 - Embed / Encode all documents with the method of choice, by default I use [SBERT](https://www.sbert.net)
 - Use HAC to get a “linkage” table of hierarchical assignments of each point to the rest of the data. Here I use [fastcluster](http://danifold.net/fastcluster.html), ward linkage by default.
@@ -144,7 +145,7 @@ pt.make_picture()
 </p>
 
 ### Summarizer
-The default sumary method is to take the cluster member closest to the cluster averag. However, any mapping of a list of texts and embeddings into a text summary can be used instead.
+The default summary method is to take the cluster member closest to the cluster average. However, any mapping of a list of texts and embeddings into a text summary can be used instead.
 ```python
 def silly_summarizer(txt,txt_embeddings):
    return "All the same to me", 0
