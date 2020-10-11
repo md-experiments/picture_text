@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from scipy.cluster import hierarchy
 from sentence_transformers import SentenceTransformer
 
-from src.hac_tools import HAC
-from src.treemap import build_tree_map
-from src.utils import TimeClass
+from picture_text.src.hac_tools import HAC
+from picture_text.src.treemap import build_tree_map
+from picture_text.src.utils import TimeClass
 
 def sbert_encoder(text_list, pretrained_reference='distilbert-base-nli-stsb-mean-tokens'):
     """

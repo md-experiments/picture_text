@@ -1,4 +1,4 @@
-from src.utils import flatten_list
+from picture_text.src.utils import flatten_list
 from scipy.cluster.hierarchy import to_tree
 import matplotlib.pyplot as plt
 from scipy.cluster import hierarchy

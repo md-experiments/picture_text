@@ -13,11 +13,10 @@ The approach is intended for grouping large sets of non-domain specific short te
 
 ### Installation
 ```py
-git clone https://github.com/md-experiments/picture_text.git
 conda create --name pt python=3.6
 conda install -n pt nb_conda_kernels
 conda activate pt
-pip install -r requirements.txt
+pip install picture_text
 ```
 
 ### A simple example
@@ -35,7 +34,7 @@ txt=['The cat sits outside',
      'I like chips',
      'I will have french fries with my burger'
        ]
-from picture_text_summary import PictureText
+from picture_text.picture_text import PictureText
 
 # initializing just sets the text corpus
 pt = PictureText(txt) 
@@ -76,7 +75,7 @@ Checkout the Colab notebook for interactive examples
 
 Consider the default values and their result
 ```python
-from picture_text_summary import PictureText
+from picture_text.picture_text import PictureText
 pt = PictureText(txt)
 pt(hac_method='ward', hac_metric='euclidean')
 pt.make_picture(layer_depth = 6,
@@ -128,7 +127,7 @@ The key features to this sort of approach are the embeddings as well as the meth
 The default set of text embeddings is via [SBERT](https://www.sbert.net)'s `distilbert-base-nli-stsb-mean-tokens`.
 
 ```python
-from picture_text_summary import sbert_encoder
+from picture_text.picture_text import sbert_encoder
 pt = PictureText(txt)
 pt(encoder=sbert_encoder)
 ```

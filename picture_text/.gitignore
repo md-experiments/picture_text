@@ -1,19 +1,17 @@
-
 .ipynb_checkpoints/
 .DS_store
 .vscode/
 __pycache__/
 notebooks/
 
-# Distribution
 dist/
 build/
 *.egg-info
 
-# Local database
 *.db
 
-# utilities
+g
+
 logs/
 data/
 database_specs
