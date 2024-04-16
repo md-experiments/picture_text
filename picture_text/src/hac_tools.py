@@ -1,8 +1,7 @@
 from picture_text.src.utils import flatten_list
 from scipy.cluster.hierarchy import to_tree
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy.cluster import hierarchy
-import fastcluster
 import numpy as np
 
 class HAC():
@@ -49,7 +48,7 @@ class HAC():
         """
         Create a dendrogram from the data in the class
         """
-        plt.figure()
+        #plt.figure()
         dn = hierarchy.dendrogram(self.linkage_table, **kwargs)
 
     def get_members(self, cluster_id):

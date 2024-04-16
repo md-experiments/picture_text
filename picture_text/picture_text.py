@@ -2,9 +2,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import fastcluster
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.cluster import hierarchy
-from sentence_transformers import SentenceTransformer
 
 from picture_text.src.hac_tools import HAC
 from picture_text.src.treemap import build_tree_map
@@ -20,6 +17,7 @@ def sbert_encoder(text_list, pretrained_reference='distilbert-base-nli-stsb-mean
     Returns:
         list of embeddings for each string
     """
+    from sentence_transformers import SentenceTransformer
     model = SentenceTransformer(pretrained_reference)
     text_embeddings = model.encode(text_list, batch_size=16, show_progress_bar=False, convert_to_numpy=True)
     return text_embeddings
@@ -151,7 +149,7 @@ class PictureText(object):
             self.average_score = df_res.apply(lambda x: x['color']*x['value'],axis=1).sum()/df_res.value.sum()
         print(f'Picture weighted average {round(self.average_score,2)}')
         # Draw tree map
-        build_tree_map(df_res,maxdepth=treemap_maxdepth,average_score=self.average_score)
+        return build_tree_map(df_res,maxdepth=treemap_maxdepth,average_score=self.average_score)
 
     def cluster_summary_simple(self,clust_txt,clust_embeddings,top_n=1, text_if_empty='blank'):
         """
@@ -188,7 +186,7 @@ class PictureText(object):
             df1=df.sort_values('cluster_rank',ascending=False).copy()
             centroid_similarity = df['cluster_rank'].mean()
             if top_n==1:
-                summary_txt = str(df1.iloc[0].titles).title()
+                summary_txt = str(df1.iloc[0].titles)
             else:
                 summary_txt = list(df1.head(top_n).titles.values)
         return summary_txt, centroid_similarity
@@ -236,12 +234,13 @@ class PictureText(object):
         """
         go = True
         clust_idx = 'Full'
-        df_res = pd.DataFrame([],columns=['cluster_id', 'cluster_parent', 'cluster_members', 'cluster_table', 'cluster_size'])
+        all_res = []
+        #df_res = pd.DataFrame([],columns=['cluster_id', 'cluster_parent', 'cluster_members', 'cluster_table', 'cluster_size'])
 
         hac = HAC(linkage_table, parent = clust_idx)
         new_clusters = hac.top_n_good_clusters(nr_splits,min_size=min_size,max_extension=max_extension)
 
-        df_res=df_res.append(pd.DataFrame(new_clusters).T)
+        all_res.append(pd.DataFrame(new_clusters).T)
         depth=depth-1
 
         while go and depth>0:
@@ -250,12 +249,13 @@ class PictureText(object):
                 hac = HAC(new_clusters[c]['cluster_table'],parent=c)
                 interim_clusters = hac.top_n_good_clusters(nr_splits,min_size=min_size,max_extension=max_extension)
                 new_res = {**new_res, **interim_clusters}
-            df_res=df_res.append(pd.DataFrame(new_res).T)
+            all_res.append(pd.DataFrame(new_res).T)
             new_clusters=new_res
             depth=depth-1
             if depth<1:
                 go = False
 
         col_nm={'cluster_size':'value','cluster_id':'id','cluster_parent':'parent'}
+        df_res = pd.concat(all_res,ignore_index=True)
         df_res=df_res.rename(columns=col_nm)
         return df_res

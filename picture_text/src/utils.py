@@ -2,6 +2,10 @@ import itertools
 import copy
 import datetime
 import time
+    
+from hashlib import md5
+import traceback
+import itertools
 
 def flatten_list(res):
     """
@@ -40,3 +44,10 @@ class TimeClass():
         self.times.append(self.t1)
         self.t0=datetime.datetime.now()
         return delta_secs, delta_mins
+
+
+def log_traceback():
+    return traceback.format_exc()
+
+def hash_text(t):
+    return md5(str(t).encode()).hexdigest()

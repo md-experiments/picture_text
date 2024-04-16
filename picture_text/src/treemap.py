@@ -62,7 +62,7 @@ def build_tree_map(df,
                 value_name = '# docs',
                 color_name = 'Avg. Similarity'):
     """
-    Can demonstrate a single or a number of dataframes as a hierarchical treemap and choose
+    Can demonstrate a dataframe as a hierarchical treemap and choose
     the depth showed at any time.
 
     Optionality:
@@ -80,38 +80,21 @@ def build_tree_map(df,
     Returns:
         Interactive plotly treemap
     """
-    if isinstance(df,list):
-        pass
-    elif isinstance(df,pd.core.frame.DataFrame):
-        df=[df]
-    else:
-        print('df of not expected format')
 
-    # Assert mandatory columns are present in dataframe
-    for (i, df_i) in enumerate(df):
-        for m in column_nm:
-            assert(column_nm[m] in df_i.columns)
+    fig = go.Figure(go.Treemap(
+        ids=df[column_nm['id']],
+        labels=df[column_nm['label']],
+        parents=df[column_nm['parent']],
+        values=df[column_nm['value']],
+        branchvalues='total',
+        marker=dict(
+            colors=df[column_nm['color']],
+            colorscale='RdBu',
+            cmid=average_score),
+        hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
+        name=''
+        ))
 
-    fig = make_subplots(1, len(df), specs=[[{"type": "domain"}]*len(df)],)
-
-    for (i, df_all_trees) in enumerate(df):
-        fig.add_trace(go.Treemap(
-            ids=df_all_trees[column_nm['id']],
-            labels=df_all_trees[column_nm['label']],
-            parents=df_all_trees[column_nm['parent']],
-            values=df_all_trees[column_nm['value']],
-            branchvalues='total',
-            marker=dict(
-                colors=df_all_trees[column_nm['color']],
-                colorscale='RdBu',
-                cmid=average_score),
-            hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
-            name=''
-            ), 1, i+1)
-    if maxdepth:
-        if maxdepth < 2:
-            print('try maxdepth > 1')
-        fig.update_traces(maxdepth=maxdepth)
     fig.update_layout(margin=dict(t = 30, b = 10, r = 10, l = 10))
     #uniformtext_minsize=12, uniformtext_mode='show')
-    fig.show()
+    return fig
