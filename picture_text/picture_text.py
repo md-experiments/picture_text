@@ -129,7 +129,8 @@ class PictureText(object):
                 treemap_maxdepth (int, optional): Number of levels of hierarchy to show, min 2, defaults to 3
 
         Returns:
-            Interactive plotly treemap
+            df_res: DataFrame with data
+            fig: Interactive plotly treemap
         """
         # Set summarizer
         if summarizer:
@@ -149,8 +150,9 @@ class PictureText(object):
             self.average_score = df_res.apply(lambda x: x['color']*x['value'],axis=1).sum()/df_res.value.sum()
         print(f'Picture weighted average {round(self.average_score,2)}')
         # Draw tree map
-        return build_tree_map(df_res,maxdepth=treemap_maxdepth,average_score=self.average_score)
-
+        fig = build_tree_map(df_res,maxdepth=treemap_maxdepth,average_score=self.average_score)
+        return df_res, fig
+    
     def cluster_summary_simple(self,clust_txt,clust_embeddings,top_n=1, text_if_empty='blank'):
         """
         Returns a summary for a list of documents assuming they belong to the same cluster.
