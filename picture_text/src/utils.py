@@ -2,7 +2,7 @@ import itertools
 import copy
 import datetime
 import time
-    
+import os
 from hashlib import md5
 import traceback
 import itertools
@@ -51,3 +51,8 @@ def log_traceback():
 
 def hash_text(t):
     return md5(str(t).encode()).hexdigest()
+
+def makedirs(paths):
+    for path in paths:
+        if not os.path.exists(path):
+            os.makedirs(path)
