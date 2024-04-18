@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 model = 'gpt4'
 extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
-root_path = '../cor-ai-flask/data'
+root_path = os.environ.get('VST_SAMPLE_DATA','./sample_data')
 
 test = os.environ.get("VST_TEST",50)
 
@@ -52,8 +52,7 @@ def create_analysis_view(collection_name, trm_fig):
 
 
 def prep_data(collection_name, width = 400):
-    path_p4 = os.path.join(root_path,'collections',collection_name,'p4_emb_n_topics')
-    save_to = os.path.join(path_p4,f'topic_n_ent_{collection_name}_{model}_{extract_schema}_{emb_model_name}.json')
+    save_to = os.path.join(root_path,f'topic_n_ent_{collection_name}_{model}_{extract_schema}_{emb_model_name}.json')
     
     text_data = json.load(open(save_to,'r'))
     print(len(text_data))
