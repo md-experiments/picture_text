@@ -5,6 +5,7 @@ import os
 import numpy as np
 from io import StringIO
 from picture_text.picture_text import PictureText
+from picture_text.src.feedback_form import contact_form
 import dash_bootstrap_components as dbc
 
 #app = Dash(__name__)
@@ -38,6 +39,7 @@ def create_analysis_view(collection_name, trm_fig):
                             id = 'treemap',
                             figure = trm_fig
                         ),
+                        contact_form(),
                         html.P(id='err', style={'color': 'red'}),
                         html.P(id='out')]
                     )
@@ -186,6 +188,31 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
             )
             for mmb_id in cluster_members
         ]
+    
+import smtplib, ssl
+@app.callback(Output('div-button', 'children'),
+     Input("button-submit", 'n_clicks')
+     ,Input("example-email-row", 'value')
+     ,Input("example-name-row", 'value')
+     ,Input("example-message-row", 'value')
+    )
+def submit_message(n, email, name, message):
+    
+    port = 465  # For SSL
+    sender_email = email
+    receiver_email = '<your email address here>'
+      
+    # Create a secure SSL context
+    context = ssl.create_default_context()       
+    
+    if n > 0:
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login("<you email address here>", '<you email password here>')
+            server.sendmail(sender_email, receiver_email, message)
+            server.quit()
+        return [html.P("Message Sent")]
+    else:
+        return[dbc.Button('Submit', color = 'primary', id='button-submit', n_clicks=0)]
 
 if __name__ == '__main__':
     app.run(debug=True)
