@@ -5,6 +5,7 @@ import os
 import numpy as np
 from io import StringIO
 from picture_text.picture_text import PictureText
+from picture_text.src.explainers import ABOUT, SAMPLE_DETAILS
 from picture_text.src.feedback_form import contact_form
 import dash_bootstrap_components as dbc
 
@@ -25,7 +26,9 @@ def create_analysis_view(collection_name, trm_fig):
     else:
         test_str = ""
     return html.Div([
-        html.H1(children=f'{test_str} Analysing: {collection_name}', style={'textAlign':'center'}),
+        html.H1(children=f'{test_str} Analysing: {SAMPLE_DETAILS[collection_name]["title"]}'),
+        html.H4(children=f'Motivation: {SAMPLE_DETAILS[collection_name]["motivation"]}'),
+        html.H4(children=f'Details: {SAMPLE_DETAILS[collection_name]["details"]}'),
         dbc.Row(
             [
                 dbc.Col(
@@ -44,8 +47,9 @@ def create_analysis_view(collection_name, trm_fig):
                             figure = trm_fig
                         ),
                         contact_form(),
-                        html.P(id='err', style={'color': 'red'}),
-                        html.P(id='out')]
+                        #html.P(id='err', style={'color': 'red'}),
+                        #html.P(id='out')
+                        ]
                     )
                 , width=5),
             ]
@@ -90,7 +94,7 @@ nav = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Lex Fridman", active="exact", href="/lex")),
     ],
     brand="Visual Storytelling",
-    brand_href="#",
+    brand_href="/",
     color="dark",
     dark=True,
 )
@@ -109,12 +113,11 @@ app.layout = html.Div([
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        html.Div([
-            html.P("This is the content of the home page!"),
+        return html.Div([
+            dcc.Markdown(ABOUT),
             html.P("", id="out"),
             html.P("", id="treemap"),       
         ])
-        return html.P("This is the content of the home page!")
     elif pathname == "/tr8":
         collection_name = 'tr8'
         return create_analysis_view(collection_name, all_data[collection_name]['trm_fig'])
@@ -182,17 +185,18 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
         return [
             dbc.Card(
                 [
-                    dbc.CardHeader(text_data[mmb_id]['summary_title']),
-                    dbc.CardHeader(text_data[mmb_id]['topic_tag']),
+                    dbc.CardHeader(f'Item: {mmb_id} Heading: ' + text_data[mmb_id]['summary_title']),
+                    dbc.CardHeader('Tag: ' + text_data[mmb_id]['topic_tag']),
                     dbc.CardBody(
                         dbc.ListGroup(
                             [dbc.ListGroupItem(b) for b in text_data[mmb_id]["summary_bullets"].split('\n')]
                         ),
                     ),
-                    dbc.CardFooter(text_data[mmb_id]['nickname']),
+                    dbc.CardFooter('Source: ' + text_data[mmb_id]['nickname']),
                     dbc.CardFooter(list_ents(text_data[mmb_id])),
                 ],
-                style={"width": "18rem"},
+                #style={"width": "24rem"},
+                style = {'margin': '10px'}
             )
             for mmb_id in cluster_members
         ]
