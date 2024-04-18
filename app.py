@@ -27,8 +27,8 @@ def create_analysis_view(collection_name, trm_fig):
         test_str = ""
     return html.Div([
         html.H1(children=f'{test_str} Analysing: {SAMPLE_DETAILS[collection_name]["title"]}'),
-        html.H4(children=f'Motivation: {SAMPLE_DETAILS[collection_name]["motivation"]}'),
-        html.H4(children=f'Details: {SAMPLE_DETAILS[collection_name]["details"]}'),
+        html.P(children=f'Motivation: {SAMPLE_DETAILS[collection_name]["motivation"]}'),
+        html.P(children=f'Details: {SAMPLE_DETAILS[collection_name]["details"]}'),
         dbc.Row(
             [
                 dbc.Col(
