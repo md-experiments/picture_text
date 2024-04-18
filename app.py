@@ -13,7 +13,7 @@ extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
 root_path = os.environ.get('VST_SAMPLE_DATA','./sample_data')
 
-test = os.environ.get("VST_TEST",50)
+test = int(os.environ.get("VST_TEST",50))
 
 #app = Dash(__name__)
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
