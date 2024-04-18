@@ -8,14 +8,16 @@ from picture_text.picture_text import PictureText
 from picture_text.src.feedback_form import contact_form
 import dash_bootstrap_components as dbc
 
-#app = Dash(__name__)
-app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 model = 'gpt4'
 extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
 root_path = '../cor-ai-flask/data'
-test = 50
 
+test = os.environ.get("VST_TEST",50)
+
+#app = Dash(__name__)
+app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 def create_analysis_view(collection_name, trm_fig):
     if test > 0:

@@ -2,7 +2,7 @@ exclude *.log
 
 recursive-exclude * __pycache__
 
-include ./requirements.txt
+include ./requirements_lib.txt
 include ./requirements_colab.txt
 include LICENSE
 include README.md
