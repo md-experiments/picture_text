@@ -28,12 +28,14 @@ def create_analysis_view(collection_name, trm_fig):
         html.H1(children=f'{test_str} Analysing: {collection_name}', style={'textAlign':'center'}),
         dbc.Row(
             [
-                dbc.Col(dbc.Container(
-                    dbc.Row(
-                    id='ls_cards',
-                    justify="evenly",
-                    ),
-                    ), 
+                dbc.Col(
+                    dbc.Container(
+                        children=[dbc.Spinner(
+                        children = [dbc.Row(
+                            id='ls_cards',
+                            justify="evenly",
+                    )],
+                    )]), 
                     width=7),
                 dbc.Col(  
                     html.Div(  
