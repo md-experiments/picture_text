@@ -18,3 +18,5 @@ logs/
 data/
 database_specs
 experiments/
+
+*.key

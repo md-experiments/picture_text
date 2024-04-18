@@ -134,6 +134,9 @@ def render_page_content(pathname):
               Output('intermediate-df-res', 'data'),
            ], Input("url", "pathname"))
 def clean_data(pathname):
+
+    if pathname == "/":
+        return None, None
     text_data = all_data[pathname.replace('/','')]['text_data']
     df_res = all_data[pathname.replace('/','')]['df_res']
     return text_data, df_res.to_json(date_format='iso', orient='split')
@@ -155,6 +158,8 @@ def first_callback(selected_data):
      Input('intermediate-text-data', 'data'),
      Input('intermediate-df-res', 'data')])
 def show_cards(selected_data, text_data, jsonified_cleaned_data):
+    if text_data is None or jsonified_cleaned_data is None:
+        return []
     df_res = pd.read_json(StringIO(jsonified_cleaned_data), orient='split')
     if selected_data is None:
         return []
@@ -198,22 +203,26 @@ import smtplib, ssl
      ,Input("example-message-row", 'value')
     )
 def submit_message(n, email, name, message):
-    
+    if os.path.exists('email.key'):
+        with open('email.key','r') as f:
+            receiver_email, receiver_pass = f.readlines()
+    else:
+        receiver_email = os.environ.get('VST_EMAIL','<your email address here>')
+        receiver_pass = os.environ.get('VST_PASS','<your email password here>')
     port = 465  # For SSL
     sender_email = email
-    receiver_email = '<your email address here>'
-      
     # Create a secure SSL context
     context = ssl.create_default_context()       
     
     if n > 0:
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-            server.login("<you email address here>", '<you email password here>')
-            server.sendmail(sender_email, receiver_email, message)
+            server.login(receiver_email, receiver_pass)
+            server.sendmail(email, receiver_email, 
+                            f"{email}\n\n\n{name}\n\n\n{message}")
             server.quit()
         return [html.P("Message Sent")]
     else:
-        return[dbc.Button('Submit', color = 'primary', id='button-submit', n_clicks=0)]
+        return [dbc.Button('Submit', color = 'dark', id='button-submit', n_clicks=0)]
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -8,7 +8,7 @@ email_input = dbc.Row([
         dbc.Col(dbc.Input(
                 type="email"
                 , id="example-email-row"
-                , placeholder="Enter email"
+                , placeholder="Enter email (optional)"
             ),width=10,
         )],className="mb-3"
 )
@@ -36,16 +36,17 @@ message = dbc.Row([
 
 def contact_form():
     markdown = ''' 
-    Send a message if you have a comment, question,
-    or concern. Thank you!'''   
+    Please share your feedback:
+    - How would you use this?
+    - What did you like?
+    - What is missing?
+    '''   
     form = html.Div([ dbc.Container([
-            dcc.Markdown(markdown)
-            , html.Br()
-            , dbc.Card(
+            html.Br(), 
+            dbc.Card(
                 dbc.CardBody([
-                     dbc.Form([email_input
-                        , user_input
-                        , message])
+                    dcc.Markdown(markdown),
+                     dbc.Form([email_input, user_input, message])
                 ,html.Div(id = 'div-button', children = [
                     dbc.Button('Submit'
                     , color = 'primary'
