@@ -30,11 +30,11 @@ SAMPLE_DETAILS = {
     'lex': {
         'title': '6 Lex Fridman Pocasts about AI',
         'motivation': 'You want to understand quickly overall themes, current conversations about AI from some of the Lex Fridman podacts',
-        'details': 'The podcasts are with: Mark Zuckerberg, Elon Musk, Joscha Bach, Jeff Bezos, Yann LeCun, Sam Altman'
+        'details': 'The podcasts are with: Joscha Bach [#392], Mark Zuckerberg [#398], Elon Musk [#400], Jeff Bezos [#405], Yann LeCun [#416], Sam Altman [#419]'
     },
     'tr8': {
         'title': '8 Company Transcripts',
         'motivation': 'You want to catch up on major corporate topics discussed in the last quarter of 2023',
-        'details': 'The companies do not go great together this will be improved. The companies are: Autodesk, Salesforce, Docusign, Nordstrom, Anheuser-Busch, Kroger, Best Buy, Snowflake, '
+        'details': 'The companies do not go great together this will be improved. The companies are: Autodesk, Salesforce, Docusign, Nordstrom, Anheuser-Busch, Kroger, Best Buy, Snowflake. '
     }
 }

@@ -8,19 +8,22 @@ from picture_text.picture_text import PictureText
 from picture_text.src.explainers import ABOUT, SAMPLE_DETAILS
 from picture_text.src.feedback_form import contact_form
 import dash_bootstrap_components as dbc
+import smtplib, ssl
 
 model = 'gpt4'
 extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
 root_path = os.environ.get('VST_SAMPLE_DATA','./sample_data')
 
-test = int(os.environ.get("VST_TEST",50))
+test = int(os.environ.get("VST_TEST",-1))
 
 #app = Dash(__name__)
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
 def create_analysis_view(collection_name, trm_fig):
+    """This is the view screen of each page. 
+    It shows the treemap and the cards of the selected cluster."""
     if test > 0:
         test_str = f" [TESTING: {test}]"
     else:
@@ -47,9 +50,8 @@ def create_analysis_view(collection_name, trm_fig):
                             figure = trm_fig
                         ),
                         contact_form(),
-                        #html.P(id='err', style={'color': 'red'}),
-                        #html.P(id='out')
                         ]
+                        +([html.P(id='out')] if test > 0 else []),
                     )
                 , width=5),
             ]
@@ -57,7 +59,7 @@ def create_analysis_view(collection_name, trm_fig):
     ])
 
 
-def prep_data(collection_name, width = 400):
+def prep_data(collection_name, width = 500):
     save_to = os.path.join(root_path,f'topic_n_ent_{collection_name}_{model}_{extract_schema}_{emb_model_name}.json')
     
     text_data = json.load(open(save_to,'r'))
@@ -76,6 +78,16 @@ def prep_data(collection_name, width = 400):
                         treemap_average_score = None, 
                         treemap_maxdepth=4,)
     trm_fig.update_layout(height = int(width*1.5), width = width)
+    try:
+        save_csv = os.path.join(root_path,f'df_res_{collection_name}_{model}_{extract_schema}_{emb_model_name}.csv')
+        df_res.to_csv(save_csv)
+    except: 
+        pass
+    del txt_embeddings
+    del txt
+    for e in text_data:
+        del e['embedding']
+    print('Prepped data for', collection_name)
     return {
         "df_res": df_res, 
         "trm_fig": trm_fig, 
@@ -170,7 +182,6 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
         return []
     else:
         select_id = selected_data['points'][0]['id']
-        label = selected_data['points'][0]['label']
         cluster_members = df_res[df_res['id'] == select_id]\
             .to_dict(orient='records')[0]['cluster_members']
         def list_ents(item):
@@ -201,7 +212,7 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
             for mmb_id in cluster_members
         ]
     
-import smtplib, ssl
+######## CALLBACK: SEND EMAIL ########
 @app.callback(Output('div-button', 'children'),
      Input("button-submit", 'n_clicks')
      ,Input("example-email-row", 'value')
@@ -216,15 +227,27 @@ def submit_message(n, email, name, message):
         receiver_email = os.environ.get('VST_EMAIL','<your email address here>')
         receiver_pass = os.environ.get('VST_PASS','<your email password here>')
     port = 465  # For SSL
-    sender_email = email
     # Create a secure SSL context
     context = ssl.create_default_context()       
-    
+    msg = f'''\
+From: {email}
+Subject: Feedback: {name}
+
+EMAIL:
+{email}
+
+NAME:
+{name}
+
+MESSAGE:
+{message} '''
     if n > 0:
+        if (email is None) or (name is None) or (message is None):
+            return [dbc.Alert("Please fill in all fields", color="secondary"),
+                    dbc.Button('Submit', color = 'dark', id='button-submit', n_clicks=0)]
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(receiver_email, receiver_pass)
-            server.sendmail(email, receiver_email, 
-                            f"{email}\n\n\n{name}\n\n\n{message}")
+            server.sendmail(email, receiver_email, msg)
             server.quit()
         return [html.P("Message Sent")]
     else:
