@@ -10,7 +10,8 @@ email_input = dbc.Row([
                 , id="example-email-row"
                 , placeholder="Enter email (optional)"
             ),width=10,
-        )],className="mb-3"
+        )],
+        #className="mb-3"
 )
 user_input = dbc.Row([
         dbc.Label("Name", html_for="example-name-row", width=2),
@@ -21,7 +22,8 @@ user_input = dbc.Row([
                 , placeholder="Enter name"
                 , maxLength = 80
             ),width=10
-        )], className="mb-3"
+        )], 
+        #className="mb-3"
 )
 message = dbc.Row([
         dbc.Label("Message"
@@ -32,9 +34,11 @@ message = dbc.Row([
                 , placeholder="Enter message"
                 , required = True)
             , width=10)
-        ], className="mb-3")
+        ], 
+        #className="mb-3"
+        )
 
-def contact_form():
+def contact_form(width):
     markdown = ''' 
     Please share your feedback:
     - How would you use this?
@@ -58,6 +62,6 @@ def contact_form():
             , html.Br()
             , html.Br()
         ])
-        ])
+        ], style = {'width': width})
     
     return form

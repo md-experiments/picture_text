@@ -14,8 +14,8 @@ model = 'gpt4'
 extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
 root_path = os.environ.get('VST_SAMPLE_DATA','./sample_data')
-
-test = int(os.environ.get("VST_TEST",-1))
+treemap_width = 400
+test = int(os.environ.get("VST_TEST",100))
 
 #app = Dash(__name__)
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -37,9 +37,8 @@ def create_analysis_view(collection_name, trm_fig):
                 dbc.Col(
                     dbc.Container(
                         children=[dbc.Spinner(
-                        children = [dbc.Row(
+                        children = [html.Div(
                             id='ls_cards',
-                            justify="evenly",
                     )],
                     )]), 
                     width=7),
@@ -49,7 +48,7 @@ def create_analysis_view(collection_name, trm_fig):
                             id = 'treemap',
                             figure = trm_fig
                         ),
-                        contact_form(),
+                        contact_form(width=treemap_width),
                         ]
                         +([html.P(id='out')] if test > 0 else []),
                     )
@@ -59,7 +58,7 @@ def create_analysis_view(collection_name, trm_fig):
     ])
 
 
-def prep_data(collection_name, width = 500):
+def prep_data(collection_name, width = treemap_width):
     save_to = os.path.join(root_path,f'topic_n_ent_{collection_name}_{model}_{extract_schema}_{emb_model_name}.json')
     
     text_data = json.load(open(save_to,'r'))
@@ -102,8 +101,8 @@ all_data = {
 nav = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("About", active="exact", href="/")),
-        dbc.NavItem(dbc.NavLink("Transcripts", active="exact", href="/tr8")),
-        dbc.NavItem(dbc.NavLink("Lex Fridman", active="exact", href="/lex")),
+        dbc.NavItem(dbc.NavLink("8 Transcripts", active="exact", href="/tr8")),
+        dbc.NavItem(dbc.NavLink("6 Lex Fridman AI Podcasts", active="exact", href="/lex")),
     ],
     brand="Visual Storytelling",
     brand_href="/",
@@ -175,13 +174,20 @@ def first_callback(selected_data):
      Input('intermediate-text-data', 'data'),
      Input('intermediate-df-res', 'data')])
 def show_cards(selected_data, text_data, jsonified_cleaned_data):
+    cluster_members = []
+    current_path = 'Full/'
     if text_data is None or jsonified_cleaned_data is None:
-        return []
+        list_cards = []
     df_res = pd.read_json(StringIO(jsonified_cleaned_data), orient='split')
     if selected_data is None:
-        return []
+        list_cards = []
+    elif len(selected_data['points']) == 0:
+        list_cards = []
+    elif not 'id' in selected_data['points'][0]:
+        list_cards = []
     else:
         select_id = selected_data['points'][0]['id']
+        current_path = selected_data['points'][0]['currentPath']
         cluster_members = df_res[df_res['id'] == select_id]\
             .to_dict(orient='records')[0]['cluster_members']
         def list_ents(item):
@@ -193,7 +199,7 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
                 dbc.Badge(f"{ent['named_entity']}", color="dark", className="me-1")
                 for ent in ent_list
             ]
-        return [
+        list_cards = [
             dbc.Card(
                 [
                     dbc.CardHeader(f'Item: {mmb_id} Heading: ' + text_data[mmb_id]['summary_title']),
@@ -205,12 +211,28 @@ def show_cards(selected_data, text_data, jsonified_cleaned_data):
                     ),
                     dbc.CardFooter('Source: ' + text_data[mmb_id]['nickname']),
                     dbc.CardFooter(list_ents(text_data[mmb_id])),
+                    dbc.Button(f"Read full ({len(text_data[mmb_id]['topic_text'].split())} words)", 
+                               color="dark", id=f"btn-{mmb_id}"),
+                    dbc.Popover(
+                        [
+                            dbc.PopoverHeader(text_data[mmb_id]['summary_title']),
+                            dbc.PopoverBody(text_data[mmb_id]['topic_text']),
+                        ],
+                        target=f"btn-{mmb_id}",
+                        placement="bottom-end",
+                        trigger="click",
+                        style={"maxWidth": "80%"},
+                    ),
                 ],
                 #style={"width": "24rem"},
-                style = {'margin': '10px'}
-            )
+                style = {"width": "24rem", 'margin': '10px'}
+            ) 
             for mmb_id in cluster_members
         ]
+    return [
+        html.P(children=f'Showing: {len(cluster_members)} items, current path {current_path}'),
+        dbc.Row(list_cards, justify="evenly",)
+    ]
     
 ######## CALLBACK: SEND EMAIL ########
 @app.callback(Output('div-button', 'children'),

@@ -28,7 +28,7 @@ At the bottom right there is also a working Email feedback form.
 
 SAMPLE_DETAILS = {
     'lex': {
-        'title': '6 Lex Fridman Pocasts about AI',
+        'title': '6 Lex Fridman Podcasts about AI',
         'motivation': 'You want to understand quickly overall themes, current conversations about AI from some of the Lex Fridman podacts',
         'details': 'The podcasts are with: Joscha Bach [#392], Mark Zuckerberg [#398], Elon Musk [#400], Jeff Bezos [#405], Yann LeCun [#416], Sam Altman [#419]'
     },
