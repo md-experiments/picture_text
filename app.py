@@ -16,7 +16,7 @@ extract_schema = 'summary_entity1'
 emb_model_name = 'oAI-3s'
 root_path = os.environ.get('VST_SAMPLE_DATA','./sample_data')
 treemap_width = 400
-test = int(os.environ.get("VST_TEST",-1))
+test = int(os.environ.get("VST_TEST",100))
 
 #app = Dash(__name__)
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -60,7 +60,7 @@ def create_analysis_view(collection_name, trm_fig):
     ])
 
 
-def prep_data(collection_name, chart_type, width = treemap_width):
+def prep_data(collection_name, width = treemap_width):
     save_to = os.path.join(root_path,f'topic_n_ent_{collection_name}_{model}_{extract_schema}_{emb_model_name}.json')
     
     text_data = json.load(open(save_to,'r'))
@@ -92,11 +92,11 @@ def prep_data(collection_name, chart_type, width = treemap_width):
     }
     color_discrete_map={**color_discrete_map, **nickname_colors}
     df_res['tag_color'] = df_res['tag_file'].apply(lambda x: color_discrete_map.get(x,'black'))
-    if chart_type == 'treemap':
-        trm_fig = build_tree_map(df_res)
-    elif chart_type == 'sunburst':
-        trm_fig = build_sunburst(df_res)
+
+    trm_fig = build_tree_map(df_res)
     trm_fig.update_layout(height = int(width*1.5), width = width)
+    sun_fig = build_sunburst(df_res)
+    sun_fig.update_layout(height = int(width*1.5), width = width)
     try:
         save_csv = os.path.join(root_path,f'df_res_{collection_name}_{model}_{extract_schema}_{emb_model_name}.csv')
         df_res.to_csv(save_csv)
@@ -106,17 +106,16 @@ def prep_data(collection_name, chart_type, width = treemap_width):
     del txt
     for e in text_data:
         del e['embedding']
-    print('Finished prepping', collection_name, ':::', chart_type, ':::', len(text_data),text_data[0].keys())
+    print('Finished prepping', collection_name, ':::', len(text_data),text_data[0].keys())
     return {
         "df_res": df_res, 
-        "trm_fig": trm_fig, 
+        "sunburst": sun_fig,
+        "treemap": trm_fig, 
         "text_data": text_data}
 
 all_data = {
-    'lex-sunburst': prep_data('lex','sunburst'),
-    'tr8-sunburst': prep_data('tr8','sunburst'),
-    'lex-treemap': prep_data('lex','treemap'),
-    'tr8-treemap': prep_data('tr8','treemap')
+    'lex': prep_data('lex'),
+    'tr8': prep_data('tr8'),
 }
 
 ######## NAVBAR ########
@@ -169,8 +168,10 @@ def render_page_content(pathname):
         ])
     elif pathname in ["/tr8-treemap",'/lex-treemap','/tr8-sunburst','/lex-sunburst']:
         collection_name = pathname.replace('/','').split('-')[0]
-        collection_key = pathname.replace('/','')
-        return create_analysis_view(collection_name, all_data[collection_key]['trm_fig'])
+        map_type = pathname.replace('/','').split('-')[1]
+        assert(collection_name in all_data.keys())
+        assert(map_type in ['treemap','sunburst'])
+        return create_analysis_view(collection_name, all_data[collection_name][map_type])
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [
@@ -224,8 +225,8 @@ def list_ents(item):
 def show_cards(selected_data, pathname, nr_clicks):
     cluster_members = []
     current_path = 'Full/'
-    text_data = all_data[pathname.replace('/','')]['text_data']
-    df_res = all_data[pathname.replace('/','')]['df_res']
+    text_data = all_data[pathname.replace('/','').split('-')[0]]['text_data']
+    df_res = all_data[pathname.replace('/','').split('-')[0]]['df_res']
     #if text_data is None or jsonified_cleaned_data is None:
     #    list_cards = []
     #df_res = pd.read_json(StringIO(jsonified_cleaned_data), orient='split')
@@ -235,7 +236,7 @@ def show_cards(selected_data, pathname, nr_clicks):
         cluster_members = list(range(min(50,df_res.shape[0])))
     else:
         select_id = selected_data['points'][0]['id']
-        current_path = selected_data['points'][0]['currentPath']
+        current_path = selected_data['points'][0]['currentPath'] + selected_data['points'][0]['label']
         cluster_members = df_res[df_res['id'] == select_id]\
             .to_dict(orient='records')[0]['cluster_members']
     def make_card(mmb_id, nr_clicks):
