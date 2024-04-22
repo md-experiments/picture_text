@@ -50,14 +50,13 @@ def build_hierarchical_dataframe(df, levels, value_column, color_columns=None):
     return df_all_trees
 
 def build_tree_map(df, 
-                average_score = 0.5, 
-                maxdepth = None, 
                 column_nm = {
                     'id':'id',
                     'label':'labels',
                     'parent':'parent',
                     'value':'value',
-                    'color':'color'
+                    'color':'color',
+                    'tag_color':'tag_color'
                     },
                 value_name = '# docs',
                 color_name = 'Avg. Similarity'):
@@ -87,14 +86,73 @@ def build_tree_map(df,
         parents=df[column_nm['parent']],
         values=df[column_nm['value']],
         branchvalues='total',
-        marker=dict(
-            colors=df[column_nm['color']],
-            colorscale='RdBu',
-            cmid=average_score),
+        #"""marker=dict(
+        ##    colors=df[column_nm['color']],
+        #    colorscale='RdBu',
+        #    cmid=average_score)
+        #),"""
+        marker=dict(colors = df[column_nm['tag_color']]),
         hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
         name=''
         ))
 
     fig.update_layout(margin=dict(t = 30, b = 10, r = 10, l = 10))
     #uniformtext_minsize=12, uniformtext_mode='show')
+    return fig
+
+def build_sunburst(df, 
+                color_discrete_map = {'(?)':'black', },
+                column_color_choice = 'color',
+                value_name = '# docs',
+                color_name = 'Avg. Similarity'):
+    """
+    Can demonstrate a dataframe as a hierarchical treemap and choose
+    the depth showed at any time.
+
+    Optionality:
+        - When fed a list of dataframse it can show them as treemaps side-by-side (note that space can be insufficient for more than 2 or 3 at a time)
+        - maxdepth = None shows all the data but can be used as parameter to restrict only so many layers at a time
+
+    Args:
+        df (dataframe or list of dataframes): Mandatory columns must match spec in column_nm. Need columns for: id, label, parent, value, color
+        average_score (float, optional): Score used as midpoint for plot colors, defaults to 0.5
+        maxdepth (int, optional): Number of levels of hierarchy to show, min 2, defaults to None
+        column_nm (dict, optional): Set of column mappings for the mandatory tree map fields. Need columns for: id, label, parent, value, color
+        value_name (string, optional): Hovertext label for 'value' values from dataframe, defaults to 'Label'
+        color_name (string, optional): Hovertext label for 'color' values from dataframe, defaults to 'Color'
+
+    Returns:
+        Interactive plotly treemap
+    """
+    import plotly.express as px
+    fig = go.Figure(go.Sunburst(
+        ids=df['id'],
+        labels=df['labels'],
+        parents=df['parent'],
+        values=df['value'],
+        branchvalues='total',
+        maxdepth=3,
+        marker = dict(colors=df['tag_color']),
+        hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
+        name='',
+        insidetextorientation='radial'
+        ))
+    """fig = go.Figure(
+        px.sunburst(
+            ids=df['id'],
+            labels=df['labels'],
+            parents=df['parent'],
+            values=df['value'],
+            branchvalues='total',
+            maxdepth=3,
+            color=df['tag_file'],
+            color_discrete_map = color_discrete_map,
+            #hovertemplate='<b>%{label} </b> <br> '+value_name+': %{value}<br>'+color_name+': %{color:.2f}',
+            #name='',
+            #insidetextorientation='radial'
+            )
+        )"""
+
+    fig.update_layout(margin=dict(t = 30, b = 10, r = 10, l = 10),
+            uniformtext=dict(minsize=5, mode='hide'))
     return fig
