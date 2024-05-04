@@ -28,13 +28,21 @@ At the bottom right there is also a working Email feedback form.
 
 SAMPLE_DETAILS = {
     'lex': {
+        'short_title': 'Lex Fridman AI Podcasts',
         'title': '6 Lex Fridman Podcasts about AI',
         'motivation': 'You want to understand quickly overall themes, current conversations about AI from some of the Lex Fridman podacts',
         'details': 'The podcasts are with: Joscha Bach [#392], Mark Zuckerberg [#398], Elon Musk [#400], Jeff Bezos [#405], Yann LeCun [#416], Sam Altman [#419]'
     },
     'tr8': {
+        'short_title': '8x Company Transcripts',
         'title': '8 Company Transcripts',
         'motivation': 'You want to catch up on major corporate topics discussed in the last quarter of 2023',
         'details': 'The companies do not go great together this will be improved. The companies are: Autodesk, Salesforce, Docusign, Nordstrom, Anheuser-Busch, Kroger, Best Buy, Snowflake. '
+    },
+    'tr_aapl': {
+        'short_title': '13Qrts Apple Inc Transcripts',
+        'title': 'Apple Inc Transcripts',
+        'motivation': 'You want to catch up on the discussions during Apple quarterly calls from the last 3 years',
+        'details': '. '
     }
 }

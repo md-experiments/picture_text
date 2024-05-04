@@ -91,7 +91,7 @@ def prep_data(collection_name, width = treemap_width):
         "KR_Q4": "red", "SNOW_Q4": "purple",
     }
     color_discrete_map={**color_discrete_map, **nickname_colors}
-    df_res['tag_color'] = df_res['tag_file'].apply(lambda x: color_discrete_map.get(x,'black'))
+    df_res['tag_color'] = df_res['tag_file'].apply(lambda x: color_discrete_map.get(x,'grey'))
 
     trm_fig = build_tree_map(df_res)
     trm_fig.update_layout(height = int(width*1.5), width = width)
@@ -113,33 +113,24 @@ def prep_data(collection_name, width = treemap_width):
         "treemap": trm_fig, 
         "text_data": text_data}
 
-all_data = {
-    'lex': prep_data('lex'),
-    'tr8': prep_data('tr8'),
-}
+all_data = {topic: prep_data(topic) for topic in SAMPLE_DETAILS.keys()}
+
 
 ######## NAVBAR ########
 nav = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("About", active="exact", href="/")),
+    ] + [
         dbc.DropdownMenu(
             [
-                dbc.DropdownMenuItem("Treemap", href="/tr8-treemap"), 
-                dbc.DropdownMenuItem("Sunburst", href="/tr8-sunburst"),
+                dbc.DropdownMenuItem("Treemap", href=f"/{topic}-treemap"), 
+                dbc.DropdownMenuItem("Sunburst", href=f"/{topic}-sunburst"),
                 ],
-            label="8 Transcripts",
+            label=SAMPLE_DETAILS[topic]['short_title'],
             in_navbar=True,
             nav=True,
-        ),
-        dbc.DropdownMenu(
-            [
-                dbc.DropdownMenuItem("Treemap", href="/lex-treemap"),
-                dbc.DropdownMenuItem("Sunburst", href="/lex-sunburst"),
-                ],
-            label="6 Lex Fridman AI Podcasts",
-            in_navbar=True,
-            nav=True,
-        ),
+        )
+        for topic in SAMPLE_DETAILS.keys()
     ],
     brand="Visual Storytelling",
     brand_href="/",
@@ -166,7 +157,7 @@ def render_page_content(pathname):
             html.P("", id="out"),
             html.P("", id="treemap"),       
         ])
-    elif pathname in ["/tr8-treemap",'/lex-treemap','/tr8-sunburst','/lex-sunburst']:
+    elif pathname.endswith('treemap') or pathname.endswith('sunburst'):
         collection_name = pathname.replace('/','').split('-')[0]
         map_type = pathname.replace('/','').split('-')[1]
         assert(collection_name in all_data.keys())
