@@ -1,6 +1,6 @@
 fastcluster==1.1.26
 sentence-transformers==0.3.4
-transformers==3.0.2
+transformers==4.38.0
 #annoy==1.0.3
 scipy==1.5.2
 matplotlib==3.3.2
